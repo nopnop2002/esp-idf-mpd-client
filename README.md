@@ -25,7 +25,6 @@ PASSWORD of your wifi.
 Maximum number of retries when connecting to wifi.
 - CONFIG_ESP_MPD_IPV4_ADDR   
 IP address of your MPD Server.   
-Display update cycle (minutes)
 - CONFIG_ESP_FONT   
 The font to use.
 
