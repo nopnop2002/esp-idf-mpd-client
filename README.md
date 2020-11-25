@@ -1,5 +1,5 @@
 # esp-idf-mpd-clinet
-MPD(MusicPlayerDaemon) client for ESP-IDF.
+MPD(MusicPlayerDaemon) client for ESP-IDF.   
 MPD protocol is [here](https://github.com/MusicPlayerDaemon/MPD/blob/master/doc/protocol.rst).   
 
 ![mpd-client](https://user-images.githubusercontent.com/6020549/100164763-e941ba80-2efb-11eb-83bd-d46323f56f65.JPG)
