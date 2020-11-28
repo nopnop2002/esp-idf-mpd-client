@@ -68,6 +68,8 @@ You can use incremental rotary encoder as volume.
 |VCC|--|3.3V or GROVE Red Line|
 |GND|--|GND or GROVE Black Line|
 
+![mpd-client-encoder](https://user-images.githubusercontent.com/6020549/100492764-b5bc9580-3172-11eb-8fe1-8bd1343d309d.JPG)
+
 # Font File   
 You can add your original fonts.   
 The format of the font file is the FONTX format.   
