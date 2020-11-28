@@ -59,6 +59,7 @@ Press and hold Right button.
 
 # Incremental rotary encoder as volume
 You can use incremental rotary encoder as volume.   
+The source code is based on [here](https://github.com/UncleRus/esp-idf-lib/tree/master/components/encoder).
 
 |Encoder||M5Stack|
 |:-:|:-:|:-:|
