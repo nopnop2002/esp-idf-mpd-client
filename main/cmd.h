@@ -10,11 +10,6 @@
 #define CMD_HALT 		900
 
 typedef struct {
-    uint16_t command;
-    TaskHandle_t taskHandle;
-} CMD_t;
-
-typedef struct {
     char command[16];
     TaskHandle_t taskHandle;
 } REQUEST_t;

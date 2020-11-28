@@ -21,7 +21,6 @@
 
 #include "cmd.h"
 
-QueueHandle_t xQueueCmd;
 QueueHandle_t xQueueRequest;
 QueueHandle_t xQueueResponse;
 static TimerHandle_t xTimers;
@@ -235,10 +234,8 @@ void app_main(void)
 	}
 
 	// Create Queue
-	xQueueCmd = xQueueCreate( 10, sizeof(CMD_t) );
 	xQueueRequest = xQueueCreate( 10, sizeof(REQUEST_t) );
 	xQueueResponse = xQueueCreate( 10, sizeof(RESPONSE_t) );
-	configASSERT( xQueueCmd );
 	configASSERT( xQueueRequest );
 	configASSERT( xQueueResponse );
 
