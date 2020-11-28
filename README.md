@@ -27,10 +27,13 @@ Maximum number of retries when connecting to wifi.
 IP address of your MPD Server.   
 - CONFIG_ESP_FONT   
 The font to use.
+- CONFIG_ENCODER   
+Enable incremental rotary encoder as volume.   
+See below.
 
 ![config-main](https://user-images.githubusercontent.com/6020549/100164797-fa8ac700-2efb-11eb-938b-319961c73cc9.jpg)
 
-![config-app](https://user-images.githubusercontent.com/6020549/100164808-0080a800-2efc-11eb-97a0-dd9cb795c7e6.jpg)
+![config-app](https://user-images.githubusercontent.com/6020549/100492489-ea7b1d80-316f-11eb-9a50-34260107be28.jpg)
 
 # Operation
 __There is no function to create or load a playlist.__   
@@ -53,6 +56,17 @@ Press Right button briefly.
 
 ## mpc volume +5
 Press and hold Right button.   
+
+# Incremental rotary encoder as volume
+You can use incremental rotary encoder as volume.   
+
+|Encoder||M5Stack|
+|:-:|:-:|:-:|
+|A-CH(CLK)|--|GPIO21 or GROVE White Line|
+|B-CH(DT)|--|GPIO22 or GROVE Yellow Line|
+|BUTTON(SW)|--|N/C|
+|VCC|--|3.3V or GROVE Red Line|
+|GND|--|GND or GROVE Black Line|
 
 # Font File   
 You can add your original fonts.   

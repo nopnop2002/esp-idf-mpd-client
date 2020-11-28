@@ -24,16 +24,24 @@ menu "Application Configuration"
 		help
 			IP address of MPD Server.
 
-    choice ESP_FONT
-        bool "Select font"
-        default ESP_FONT_GOTHIC
-        help
-            Select font.
+	choice ESP_FONT
+		bool "Select font"
+		default ESP_FONT_GOTHIC
+		help
+			Select font.
 
-        config ESP_FONT_GOTHIC
-            bool "Gothic"
-        config ESP_FONT_MINCYO
-            bool "Mincyo"
-    endchoice
+		config ESP_FONT_GOTHIC
+			bool "Gothic"
+		config ESP_FONT_MINCYO
+			bool "Mincyo"
+	endchoice
+
+	config ENCODER
+		bool "Enable incremental rotary encoder as volume"
+		default false
+		help
+			Enable incremental rotary encoder as volume.
+			GPIO number to Encoder Phase A is GPIO21.
+			GPIO number to Encoder Phase B is GPIO22.
 
 endmenu

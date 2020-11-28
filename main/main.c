@@ -143,55 +143,55 @@ void wifi_init_sta(void)
 }
 
 static void SPIFFS_Directory(char * path) {
-    DIR* dir = opendir(path);
-    assert(dir != NULL);
-    while (true) {
-        struct dirent*pe = readdir(dir);
-        if (!pe) break;
-        ESP_LOGI(__FUNCTION__,"d_name=%s d_ino=%d d_type=%x", pe->d_name,pe->d_ino, pe->d_type);
-    }
-    closedir(dir);
+	DIR* dir = opendir(path);
+	assert(dir != NULL);
+	while (true) {
+		struct dirent*pe = readdir(dir);
+		if (!pe) break;
+		ESP_LOGI(__FUNCTION__,"d_name=%s d_ino=%d d_type=%x", pe->d_name,pe->d_ino, pe->d_type);
+	}
+	closedir(dir);
 }
 
 
 esp_err_t SPIFFS_Mount(char * path, char * label, int max_files) {
-    esp_vfs_spiffs_conf_t esp_vfs_spiffs_conf = {
-        .base_path = path,
-        .partition_label = label,
-        .max_files = max_files,
-        .format_if_mount_failed =true
-    };
+	esp_vfs_spiffs_conf_t esp_vfs_spiffs_conf = {
+		.base_path = path,
+		.partition_label = label,
+		.max_files = max_files,
+		.format_if_mount_failed =true
+	};
 
-    // Use settings defined above toinitialize and mount SPIFFS filesystem.
-    // Note: esp_vfs_spiffs_register is anall-in-one convenience function.
-    esp_err_t ret = esp_vfs_spiffs_register(&esp_vfs_spiffs_conf);
-    if (ret != ESP_OK) {
-        if (ret ==ESP_FAIL) {
-            ESP_LOGE(TAG, "Failed to mount or format filesystem");
-        } else if (ret== ESP_ERR_NOT_FOUND) {
-            ESP_LOGE(TAG, "Failed to find SPIFFS partition");
-        } else {
-        }
-        return ret;
-    }
+	// Use settings defined above toinitialize and mount SPIFFS filesystem.
+	// Note: esp_vfs_spiffs_register is anall-in-one convenience function.
+	esp_err_t ret = esp_vfs_spiffs_register(&esp_vfs_spiffs_conf);
+	if (ret != ESP_OK) {
+		if (ret ==ESP_FAIL) {
+			ESP_LOGE(TAG, "Failed to mount or format filesystem");
+		} else if (ret== ESP_ERR_NOT_FOUND) {
+			ESP_LOGE(TAG, "Failed to find SPIFFS partition");
+		} else {
+		}
+		return ret;
+	}
 
-    size_t total = 0, used = 0;
-    ret = esp_spiffs_info(esp_vfs_spiffs_conf.partition_label, &total, &used);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG,"Failed to get SPIFFS partition information (%s)",esp_err_to_name(ret));
-    } else {
-        ESP_LOGI(TAG,"Partition size: total: %d, used: %d", total, used);
-    }
+	size_t total = 0, used = 0;
+	ret = esp_spiffs_info(esp_vfs_spiffs_conf.partition_label, &total, &used);
+	if (ret != ESP_OK) {
+		ESP_LOGE(TAG,"Failed to get SPIFFS partition information (%s)",esp_err_to_name(ret));
+	} else {
+		ESP_LOGI(TAG,"Partition size: total: %d, used: %d", total, used);
+	}
 
-    if (ret == ESP_OK) {
-        ESP_LOGI(TAG, "Mount %s to %s success", label, path);
-        SPIFFS_Directory(path);
-    }
-    return ret;
+	if (ret == ESP_OK) {
+		ESP_LOGI(TAG, "Mount %s to %s success", label, path);
+		SPIFFS_Directory(path);
+	}
+	return ret;
 }
 
 void vTimerCallback( TimerHandle_t xTimer ){
-    // Request status & currentsong
+	// Request status & currentsong
 	ESP_LOGD(TAG, "vTimerCallback");
 	REQUEST_t requestBuf;
 	requestBuf.taskHandle = xTimer;
@@ -209,6 +209,10 @@ void buttonB(void *pvParameters);
 void buttonC(void *pvParameters);
 void tft(void *pvParameters);
 void tcp_client_task(void *pvParameters);
+#if CONFIG_ENCODER
+void encoder(void *pvParameters);
+#endif
+
 
 void app_main(void)
 {
@@ -223,20 +227,20 @@ void app_main(void)
 	ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
 	wifi_init_sta();
 
-    ESP_LOGI(TAG, "Mount storage0 to /fonts");
-    if (SPIFFS_Mount("/fonts", "storage0", 6) != ESP_OK)
-    {
-        ESP_LOGE(TAG, "SPIFFS mount failed");
-        while(1) { vTaskDelay(1); }
-    }
+	ESP_LOGI(TAG, "Mount storage0 to /fonts");
+	if (SPIFFS_Mount("/fonts", "storage0", 6) != ESP_OK)
+	{
+		ESP_LOGE(TAG, "SPIFFS mount failed");
+		while(1) { vTaskDelay(1); }
+	}
 
-    // Create Queue
-    xQueueCmd = xQueueCreate( 10, sizeof(CMD_t) );
-    xQueueRequest = xQueueCreate( 10, sizeof(REQUEST_t) );
-    xQueueResponse = xQueueCreate( 10, sizeof(RESPONSE_t) );
-    configASSERT( xQueueCmd );
-    configASSERT( xQueueRequest );
-    configASSERT( xQueueResponse );
+	// Create Queue
+	xQueueCmd = xQueueCreate( 10, sizeof(CMD_t) );
+	xQueueRequest = xQueueCreate( 10, sizeof(REQUEST_t) );
+	xQueueResponse = xQueueCreate( 10, sizeof(RESPONSE_t) );
+	configASSERT( xQueueCmd );
+	configASSERT( xQueueRequest );
+	configASSERT( xQueueResponse );
 
 	// Create Timer
 	xTimers = xTimerCreate("connTmr", (5000 / portTICK_RATE_MS), pdTRUE, ( void * ) 0, vTimerCallback);
@@ -247,9 +251,12 @@ void app_main(void)
 
 
 	// Create Task
-    xTaskCreate(buttonA, "BUTTON1", 1024*2, NULL, 2, NULL);
-    xTaskCreate(buttonB, "BUTTON2", 1024*2, NULL, 2, NULL);
-    xTaskCreate(buttonC, "BUTTON3", 1024*2, NULL, 2, NULL);
+	xTaskCreate(buttonA, "BUTTON1", 1024*2, NULL, 2, NULL);
+	xTaskCreate(buttonB, "BUTTON2", 1024*2, NULL, 2, NULL);
+	xTaskCreate(buttonC, "BUTTON3", 1024*2, NULL, 2, NULL);
 	xTaskCreate(tft, "TFT", 1024*8, NULL, 5, NULL);
 	xTaskCreate(tcp_client_task, "TCP", 4096, NULL, 5, NULL);
+#if CONFIG_ENCODER
+	xTaskCreate(encoder, "ENCODER", 1024*2, NULL, 2, NULL);
+#endif
 }
