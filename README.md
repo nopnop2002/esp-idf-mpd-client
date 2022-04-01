@@ -12,9 +12,11 @@ M5Stack
 ```
 git clone https://github.com/nopnop2002/esp-idf-mpd-client
 cd esp-idf-mpd-client
-make menuconfig
-make flash monitor
+idf.py menuconfig
+idf.py flash monitor
 ```
+
+
 # Configuration
 Set the following items using menuconfig.
 - CONFIG_ESP_WIFI_SSID   
