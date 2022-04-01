@@ -45,19 +45,19 @@ Press Left button briefly.
 State is toggled.
 
 ## mpc paly
-Press and hold Left button.   
+Press and hold Left button for at least 2 seconds.   
 
 ## mpc next
 Press Middle button briefly.   
 
 ## mpc prev
-Press and hold Middle button.   
+Press and hold Middle button for at least 2 seconds.   
 
 ## mpc volume -5
 Press Right button briefly.   
 
 ## mpc volume +5
-Press and hold Right button.   
+Press and hold Right button for at least 2 seconds.   
 
 # Incremental rotary encoder as volume
 You can use incremental rotary encoder as volume.   
