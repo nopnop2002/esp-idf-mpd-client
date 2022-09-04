@@ -7,6 +7,7 @@
    CONDITIONS OF ANY KIND, either express or implied.
 */
 #include <string.h>
+#include <netdb.h> //hostent
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_log.h"
@@ -15,7 +16,7 @@
 
 #include "cmd.h"
 
-#define PORT 6600
+#define PORT 6600 // MPD port
 
 static const char *TAG = "TCP";
 
@@ -27,28 +28,38 @@ void tcp_client_task(void *pvParameters)
 	char tx_buffer[128];
 	char rx_buffer[128];
 	char end_buffer[5];
-	char host_ip[] = CONFIG_ESP_MPD_IPV4_ADDR;
-	int addr_family = 0;
-	int ip_protocol = 0;
 	//end_buffer[0] = 0x0a; // LF
 	end_buffer[0] = 0x4f; // O
 	end_buffer[1] = 0x4b; // K
 	end_buffer[2] = 0x0a; // LF
 	end_buffer[3] = 0x00; 
 
+	char host[] = CONFIG_ESP_MPD_SERVER;
 	struct sockaddr_in dest_addr;
-	dest_addr.sin_addr.s_addr = inet_addr(host_ip);
+	memset(&dest_addr, 0, sizeof(dest_addr));
 	dest_addr.sin_family = AF_INET;
 	dest_addr.sin_port = htons(PORT);
-	addr_family = AF_INET;
-	ip_protocol = IPPROTO_IP;
-
-	int sock =	socket(addr_family, SOCK_STREAM, ip_protocol);
+	dest_addr.sin_addr.s_addr = inet_addr(host);
+	ESP_LOGI(TAG, "dest_addr.sin_addr.s_addr=%x", dest_addr.sin_addr.s_addr);
+	if (dest_addr.sin_addr.s_addr == 0xffffffff) {
+		struct hostent *hp;
+		hp = gethostbyname(host);
+		if (hp == NULL) {
+			ESP_LOGE(TAG, "gethostbyname fail");
+			vTaskDelete(NULL);
+		}
+		struct ip4_addr *ip4_addr;
+		ip4_addr = (struct ip4_addr *)hp->h_addr;
+		dest_addr.sin_addr.s_addr = ip4_addr->addr;
+		ESP_LOGI(TAG, "dest_addr.sin_addr.s_addr=%x", dest_addr.sin_addr.s_addr);
+	}
+	
+	int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
 	if (sock < 0) {
 		ESP_LOGE(TAG, "Unable to create socket: errno %d", errno);
 		vTaskDelete(NULL);
 	}
-	ESP_LOGI(TAG, "Socket created, connecting to %s:%d", host_ip, PORT);
+	ESP_LOGI(TAG, "Socket created, connecting to %s:%d", host, PORT);
 
 	int err = connect(sock, (struct sockaddr *)&dest_addr, sizeof(struct sockaddr_in6));
 	if (err != 0) {
@@ -68,7 +79,7 @@ void tcp_client_task(void *pvParameters)
 		// Data received
 		else {
 			rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
-			ESP_LOGI(TAG, "Received %d bytes from %s:", len, host_ip);
+			ESP_LOGI(TAG, "Received %d bytes from %s:", len, host);
 			ESP_LOGI(TAG, "[%s]", rx_buffer);
 			if (strncmp(rx_buffer, "OK MPD", 6) == 0) break;
 		}
@@ -123,7 +134,7 @@ void tcp_client_task(void *pvParameters)
 			// Data received
 			else {
 				rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
-				ESP_LOGD(TAG, "Received %d bytes from %s:", len, host_ip);
+				ESP_LOGD(TAG, "Received %d bytes from %s:", len, host);
 				ESP_LOGD(TAG, "[%s]", rx_buffer);
 				ESP_LOG_BUFFER_HEXDUMP(TAG, rx_buffer, len, ESP_LOG_DEBUG);
 				payloadLength = payloadLength + len;

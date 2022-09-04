@@ -40,18 +40,18 @@ extern QueueHandle_t xQueueResponse;
 // Left Button Monitoring
 void buttonA(void *pvParameters)
 {
-	ESP_LOGI(pcTaskGetTaskName(0), "Start");
+	ESP_LOGI(pcTaskGetName(0), "Start");
 	REQUEST_t requestBuf;
 	requestBuf.taskHandle = xTaskGetCurrentTaskHandle();
 
 	// set the GPIO as a input
-	gpio_pad_select_gpio(GPIO_INPUT_A);
+	gpio_reset_pin(GPIO_INPUT_A);
 	gpio_set_direction(GPIO_INPUT_A, GPIO_MODE_DEF_INPUT);
 
 	while(1) {
 		int level = gpio_get_level(GPIO_INPUT_A);
 		if (level == 0) {
-			ESP_LOGI(pcTaskGetTaskName(0), "Push Button");
+			ESP_LOGI(pcTaskGetName(0), "Push Button");
 			TickType_t startTick = xTaskGetTickCount();
 			while(1) {
 				level = gpio_get_level(GPIO_INPUT_A);
@@ -73,18 +73,18 @@ void buttonA(void *pvParameters)
 // Middle Button Monitoring
 void buttonB(void *pvParameters)
 {
-	ESP_LOGI(pcTaskGetTaskName(0), "Start");
+	ESP_LOGI(pcTaskGetName(0), "Start");
 	REQUEST_t requestBuf;
 	requestBuf.taskHandle = xTaskGetCurrentTaskHandle();
 
 	// set the GPIO as a input
-	gpio_pad_select_gpio(GPIO_INPUT_B);
+	gpio_reset_pin(GPIO_INPUT_B);
 	gpio_set_direction(GPIO_INPUT_B, GPIO_MODE_DEF_INPUT);
 
 	while(1) {
 		int level = gpio_get_level(GPIO_INPUT_B);
 		if (level == 0) {
-			ESP_LOGI(pcTaskGetTaskName(0), "Push Button");
+			ESP_LOGI(pcTaskGetName(0), "Push Button");
 			TickType_t startTick = xTaskGetTickCount();
 			while(1) {
 				level = gpio_get_level(GPIO_INPUT_B);
@@ -106,18 +106,18 @@ void buttonB(void *pvParameters)
 // Right Button Monitoring
 void buttonC(void *pvParameters)
 {
-	ESP_LOGI(pcTaskGetTaskName(0), "Start");
+	ESP_LOGI(pcTaskGetName(0), "Start");
 	REQUEST_t requestBuf;
 	requestBuf.taskHandle = xTaskGetCurrentTaskHandle();
 
 	// set the GPIO as a input
-	gpio_pad_select_gpio(GPIO_INPUT_C);
+	gpio_reset_pin(GPIO_INPUT_C);
 	gpio_set_direction(GPIO_INPUT_C, GPIO_MODE_DEF_INPUT);
 
 	while(1) {
 		int level = gpio_get_level(GPIO_INPUT_C);
 		if (level == 0) {
-			ESP_LOGI(pcTaskGetTaskName(0), "Push Button");
+			ESP_LOGI(pcTaskGetName(0), "Push Button");
 			TickType_t startTick = xTaskGetTickCount();
 			while(1) {
 				level = gpio_get_level(GPIO_INPUT_C);
@@ -213,7 +213,7 @@ void getCurrentsong(char *payload, CURRENTSONG_t *currentsong)
 
 void tft(void *pvParameters)
 {
-	ESP_LOGI(pcTaskGetTaskName(0), "Start");
+	ESP_LOGI(pcTaskGetName(0), "Start");
 
 	// Set font file
 	FontxFile fx[2];
@@ -229,9 +229,9 @@ void tft(void *pvParameters)
 	uint8_t fontWidth;
 	uint8_t fontHeight;
 	GetFontx(fx, 0, buffer, &fontWidth, &fontHeight);
-	ESP_LOGI(pcTaskGetTaskName(0), "fontWidth=%d fontHeight=%d",fontWidth,fontHeight);
+	ESP_LOGI(pcTaskGetName(0), "fontWidth=%d fontHeight=%d",fontWidth,fontHeight);
 	size_t maxChar = SCREEN_WIDTH / fontWidth;
-	ESP_LOGI(pcTaskGetTaskName(0), "maxChar=%d",maxChar);
+	ESP_LOGI(pcTaskGetName(0), "maxChar=%d",maxChar);
 
 	// Request play , status , currentsong
 	REQUEST_t requestBuf;
@@ -247,10 +247,10 @@ void tft(void *pvParameters)
 	TFT_t dev;
 	spi_master_init(&dev, CS_GPIO, DC_GPIO, RESET_GPIO, BL_GPIO);
 	lcdInit(&dev, 0x9341, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0);
-	ESP_LOGI(pcTaskGetTaskName(0), "Setup Screen done");
+	ESP_LOGI(pcTaskGetName(0), "Setup Screen done");
 
 	int lines = (SCREEN_HEIGHT - fontHeight) / fontHeight;
-	ESP_LOGD(pcTaskGetTaskName(0), "SCREEN_HEIGHT=%d fontHeight=%d lines=%d", SCREEN_HEIGHT, fontHeight, lines);
+	ESP_LOGD(pcTaskGetName(0), "SCREEN_HEIGHT=%d fontHeight=%d lines=%d", SCREEN_HEIGHT, fontHeight, lines);
 
 	// Clear Screen
 	lcdFillScreen(&dev, BLACK);
@@ -277,9 +277,9 @@ void tft(void *pvParameters)
 
 	while(1) {
 		xQueueReceive(xQueueResponse, &responseBuf, portMAX_DELAY);
-		ESP_LOGI(pcTaskGetTaskName(0),"command=%s length=%d existPlaylist=%d", 
+		ESP_LOGI(pcTaskGetName(0),"command=%s length=%d existPlaylist=%d", 
 				responseBuf.command, strlen(responseBuf.payload), existPlaylist);
-		ESP_LOGD(pcTaskGetTaskName(0),"\n%s", responseBuf.payload);
+		ESP_LOGD(pcTaskGetName(0),"\n%s", responseBuf.payload);
 		if (strcmp(responseBuf.command, "playlist") == 0) {
 			if (strlen(responseBuf.payload) == 0) {
 				uint16_t ypos = fontHeight*3-1;
@@ -328,7 +328,7 @@ void tft(void *pvParameters)
 				continue;
 			}
 
-			ESP_LOGD(pcTaskGetTaskName(0),"\n%s", responseBuf.payload);
+			ESP_LOGD(pcTaskGetName(0),"\n%s", responseBuf.payload);
 			getCurrentsong(responseBuf.payload, &currentsong);
 			if (strcmp(currentsongOld.Title, currentsong.Title) == 0) continue;
 

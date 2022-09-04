@@ -25,8 +25,8 @@ SSID of your wifi.
 PASSWORD of your wifi.
 - CONFIG_ESP_MAXIMUM_RETRY   
 Maximum number of retries when connecting to wifi.
-- CONFIG_ESP_MPD_IPV4_ADDR   
-IP address of your MPD Server.   
+- CONFIG_ESP_MPD_SERVER   
+IP address or mDNS name of your MPD Server.   
 - CONFIG_ESP_FONT   
 The font to use.
 - CONFIG_ENCODER   
@@ -35,7 +35,7 @@ See below.
 
 ![config-main](https://user-images.githubusercontent.com/6020549/100164797-fa8ac700-2efb-11eb-938b-319961c73cc9.jpg)
 
-![config-app](https://user-images.githubusercontent.com/6020549/100492489-ea7b1d80-316f-11eb-9a50-34260107be28.jpg)
+![config-app](https://user-images.githubusercontent.com/6020549/188337603-955c45ec-c1fe-4c71-bc36-b834a1436bde.jpg)
 
 # Operation
 __There is no function to create or load a playlist.__   

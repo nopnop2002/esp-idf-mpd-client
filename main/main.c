@@ -193,7 +193,7 @@ void vTimerCallback( TimerHandle_t xTimer ){
 	// Request status & currentsong
 	ESP_LOGD(TAG, "vTimerCallback");
 	REQUEST_t requestBuf;
-	requestBuf.taskHandle = xTimer;
+	requestBuf.taskHandle = (TaskHandle_t)xTimer;
 	strcpy(requestBuf.command, "playlist");
 	xQueueSend(xQueueRequest, &requestBuf, 0);
 	strcpy(requestBuf.command, "status");
@@ -240,7 +240,7 @@ void app_main(void)
 	configASSERT( xQueueResponse );
 
 	// Create Timer
-	xTimers = xTimerCreate("connTmr", (5000 / portTICK_RATE_MS), pdTRUE, ( void * ) 0, vTimerCallback);
+	xTimers = xTimerCreate("connTmr", (5000 / portTICK_PERIOD_MS), pdTRUE, ( void * ) 0, vTimerCallback);
 	configASSERT( xTimers );
 
 	// Start Timer

@@ -18,11 +18,11 @@ menu "Application Configuration"
 		help
 			Set the Maximum retry to avoid station reconnecting to the AP unlimited when the AP is really inexistent.
 
-	config ESP_MPD_IPV4_ADDR
-		string "MPD Server Address"
-		default "192.168.10.165"
+	config ESP_MPD_SERVER
+		string "IP address or mDNS of MPD Server"
+		default "mpd-server.local"
 		help
-			IP address of MPD Server.
+			IP address or mDNS of MPD Server.
 
 	choice ESP_FONT
 		bool "Select font"
