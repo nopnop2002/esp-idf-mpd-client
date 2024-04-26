@@ -162,6 +162,11 @@ int16_t getItem(char * payload, char * key, char * value, size_t value_len) {
 }
 
 void setChar(char * target, size_t targetLen, char * source, size_t sourceLen) {
+	if (sourceLen == 0) {
+		target[0] = 0;
+		return;
+	}
+
 	if (targetLen > sourceLen) {
 		strcpy(target, source);
 	} else {
@@ -206,9 +211,9 @@ void getCurrentsong(char *payload, CURRENTSONG_t *currentsong)
 	ESP_LOGD("getCurrentsong", "key=[Track] value=[%s] value_len=%d", value, value_len);
 	currentsong->Track = atoi(value);
 
-	ESP_LOGD("getCurrentsong", "currentsong->Artist=%s", currentsong->Artist);
-	ESP_LOGD("getCurrentsong", "currentsong->Title=%s", currentsong->Title);
-	ESP_LOGD("getCurrentsong", "currentsong->Album=%s", currentsong->Album);
+	ESP_LOGD("getCurrentsong", "currentsong->Artist=[%s]", currentsong->Artist);
+	ESP_LOGD("getCurrentsong", "currentsong->Title=[%s]", currentsong->Title);
+	ESP_LOGD("getCurrentsong", "currentsong->Album=[%s]", currentsong->Album);
 	ESP_LOGD("getCurrentsong", "currentsong->Track=%d", currentsong->Track);
 }
 
@@ -329,7 +334,7 @@ void tft(void *pvParameters)
 				continue;
 			}
 
-			ESP_LOGD(pcTaskGetName(0),"\n%s", responseBuf.payload);
+			ESP_LOGD(pcTaskGetName(0),"responseBuf.payload=[%s]", responseBuf.payload);
 			getCurrentsong(responseBuf.payload, &currentsong);
 			if (strcmp(currentsongOld.Title, currentsong.Title) == 0) continue;
 
