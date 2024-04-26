@@ -1,13 +1,17 @@
-/* MPC Client Example
+/*  BSD Socket TCP Client
 
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
+    This example code is in the Public Domain (or CC0 licensed, at your option.)
 
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
+    Unless required by applicable law or agreed to in writing, this
+    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+    CONDITIONS OF ANY KIND, either express or implied.
 */
+
+#include <stdio.h>
+#include <inttypes.h>
 #include <string.h>
 #include <netdb.h> //hostent
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_log.h"
@@ -40,7 +44,7 @@ void tcp_client_task(void *pvParameters)
 	dest_addr.sin_family = AF_INET;
 	dest_addr.sin_port = htons(PORT);
 	dest_addr.sin_addr.s_addr = inet_addr(host);
-	ESP_LOGI(TAG, "dest_addr.sin_addr.s_addr=%x", dest_addr.sin_addr.s_addr);
+	ESP_LOGI(TAG, "dest_addr.sin_addr.s_addr=0x%"PRIx32, dest_addr.sin_addr.s_addr);
 	if (dest_addr.sin_addr.s_addr == 0xffffffff) {
 		struct hostent *hp;
 		hp = gethostbyname(host);
@@ -51,8 +55,8 @@ void tcp_client_task(void *pvParameters)
 		struct ip4_addr *ip4_addr;
 		ip4_addr = (struct ip4_addr *)hp->h_addr;
 		dest_addr.sin_addr.s_addr = ip4_addr->addr;
-		ESP_LOGI(TAG, "dest_addr.sin_addr.s_addr=%x", dest_addr.sin_addr.s_addr);
 	}
+	ESP_LOGI(TAG, "dest_addr.sin_addr.s_addr=0x%"PRIx32, dest_addr.sin_addr.s_addr);
 	
 	int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
 	if (sock < 0) {
@@ -144,13 +148,37 @@ void tcp_client_task(void *pvParameters)
 					}
 				}
 
+				if (strstr(rx_buffer, end_buffer) != NULL) break;
 				/* 
 				This statement is incomplete.
 				The letter O and the letter K will be received in separate packets.
 				If the letter O and the letter K are split into separate packets, 
 				the receive timeout will occur.
 				*/
-				if (strstr(rx_buffer, end_buffer) != NULL) break;
+#if 0
+receive this packet first:
+The end is not "O" + "K" + LF, so the packet is not finish
+I (126653) TCP: 0x3ffc8b00   76 6f 6c 75 6d 65 3a 20  34 31 0a 72 65 70 65 61  |volume: 41.repea|
+I (126663) TCP: 0x3ffc8b10   74 3a 20 30 0a 72 61 6e  64 6f 6d 3a 20 30 0a 73  |t: 0.random: 0.s|
+I (126663) TCP: 0x3ffc8b20   69 6e 67 6c 65 3a 20 30  0a 63 6f 6e 73 75 6d 65  |ingle: 0.consume|
+I (126673) TCP: 0x3ffc8b30   3a 20 30 0a 70 6c 61 79  6c 69 73 74 3a 20 35 34  |: 0.playlist: 54|
+I (126683) TCP: 0x3ffc8b40   0a 70 6c 61 79 6c 69 73  74 6c 65 6e 67 74 68 3a  |.playlistlength:|
+I (126693) TCP: 0x3ffc8b50   20 31 30 0a 6d 69 78 72  61 6d 70 64 62 3a 20 30  | 10.mixrampdb: 0|
+I (126703) TCP: 0x3ffc8b60   2e 30 30 30 30 30 30 0a  73 74 61 74 65 3a 20 70  |.000000.state: p|
+I (126713) TCP: 0x3ffc8b70   6c 61 79 0a 73 6f 6e 67  3a 20 31 0a 73 6f 6e     |lay.song: 1.son|
+
+
+receive this packet next:
+The end is "O" + "K" + LF, so the packet is finished
+I (126753) TCP: 0x3ffc8b00   67 69 64 3a 20 33 30 32  0a 74 69 6d 65 3a 20 31  |gid: 302.time: 1|
+I (126763) TCP: 0x3ffc8b10   31 35 3a 32 31 31 0a 65  6c 61 70 73 65 64 3a 20  |15:211.elapsed: |
+I (126763) TCP: 0x3ffc8b20   31 31 34 2e 35 39 34 0a  62 69 74 72 61 74 65 3a  |114.594.bitrate:|
+I (126773) TCP: 0x3ffc8b30   20 33 32 30 0a 64 75 72  61 74 69 6f 6e 3a 20 32  | 320.duration: 2|
+I (126783) TCP: 0x3ffc8b40   31 30 2e 37 32 39 0a 61  75 64 69 6f 3a 20 34 34  |10.729.audio: 44|
+I (126793) TCP: 0x3ffc8b50   31 30 30 3a 32 34 3a 32  0a 6e 65 78 74 73 6f 6e  |100:24:2.nextson|
+I (126803) TCP: 0x3ffc8b60   67 3a 20 32 0a 6e 65 78  74 73 6f 6e 67 69 64 3a  |g: 2.nextsongid:|
+I (126813) TCP: 0x3ffc8b70   20 33 30 33 0a 4f 4b 0a                           | 303.OK.|
+#endif
 			}
 		}
 		ESP_LOGI(TAG, "reading end. payloadLength=%d response=%d", payloadLength, response);

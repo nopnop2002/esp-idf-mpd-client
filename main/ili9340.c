@@ -1,4 +1,6 @@
+#include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
 #include <math.h>
 
 #include "freertos/FreeRTOS.h"
@@ -18,11 +20,7 @@ static const int GPIO_SCLK = 18;
 
 static const int SPI_Command_Mode = 0;
 static const int SPI_Data_Mode = 1;
-//static const int SPI_Frequency = SPI_MASTER_FREQ_20M;
-////static const int SPI_Frequency = SPI_MASTER_FREQ_26M;
-static const int SPI_Frequency = SPI_MASTER_FREQ_40M;
-////static const int SPI_Frequency = SPI_MASTER_FREQ_80M;
-
+static const int SPI_Frequency = SPI_MASTER_FREQ_10M;
 
 void spi_master_init(TFT_t * dev, int16_t GPIO_CS, int16_t GPIO_DC, int16_t GPIO_RESET, int16_t GPIO_BL)
 {
@@ -180,7 +178,7 @@ bool spi_master_write_colors(TFT_t * dev, uint16_t * colors, uint16_t size)
 void delayMS(int ms) {
 	int _ms = ms + (portTICK_PERIOD_MS - 1);
 	TickType_t xTicksToDelay = _ms / portTICK_PERIOD_MS;
-	ESP_LOGD(TAG, "ms=%d _ms=%d portTICK_PERIOD_MS=%d xTicksToDelay=%d",ms,_ms,portTICK_PERIOD_MS,xTicksToDelay);
+	ESP_LOGD(TAG, "ms=%d _ms=%d portTICK_PERIOD_MS=%"PRIu32" xTicksToDelay=%"PRIu32,ms,_ms,portTICK_PERIOD_MS,xTicksToDelay);
 	vTaskDelay(xTicksToDelay);
 }
 

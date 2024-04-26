@@ -62,6 +62,7 @@ void buttonA(void *pvParameters)
 			TickType_t diffTick = endTick-startTick;
 			strcpy(requestBuf.command, "pause");
 			if (diffTick > 200) strcpy(requestBuf.command, "play");
+			ESP_LOGI(pcTaskGetName(0), "requestBuf.command=[%s]", requestBuf.command);
 			xQueueSend(xQueueRequest, &requestBuf, 0);
 			strcpy(requestBuf.command, "status");
 			xQueueSend(xQueueRequest, &requestBuf, 0);
