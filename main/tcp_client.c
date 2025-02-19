@@ -27,7 +27,7 @@ static const char *TAG = "TCP";
 extern QueueHandle_t xQueueRequest;
 extern QueueHandle_t xQueueResponse;
 
-void tcp_client_task(void *pvParameters)
+void tcp_client(void *pvParameters)
 {
 	char tx_buffer[128];
 	char rx_buffer[128];
